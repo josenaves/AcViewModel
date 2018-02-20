@@ -19,8 +19,9 @@ import butterknife.ButterKnife;
 public class RepoListAdapter extends RecyclerView.Adapter <RepoListAdapter.RepoViewHolder> {
 
     private final List<Repo> data = new ArrayList<>();
+    private final RepoSelectedListener repoSelectedListener;
 
-    RepoListAdapter(ListViewModel viewModel, LifecycleOwner lifecycleOwner) {
+    RepoListAdapter(ListViewModel viewModel, LifecycleOwner lifecycleOwner, RepoSelectedListener repoSelectedListener) {
         viewModel.getRepos().observe(lifecycleOwner, repos -> {
             data.clear();
             if (repos != null) {
@@ -30,12 +31,13 @@ public class RepoListAdapter extends RecyclerView.Adapter <RepoListAdapter.RepoV
             notifyDataSetChanged();  // TODO: Use DiffUtil when we have AutoValue models
         });
         setHasStableIds(true);
+        this.repoSelectedListener = repoSelectedListener;
     }
 
     @Override
     public RepoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_repo_list_item, parent, false);
-        return new RepoViewHolder(view);
+        return new RepoViewHolder(view, repoSelectedListener);
     }
 
     @Override
@@ -59,12 +61,20 @@ public class RepoListAdapter extends RecyclerView.Adapter <RepoListAdapter.RepoV
         @BindView(R.id.tv_forks) TextView forksTextView;
         @BindView(R.id.tv_stars) TextView starsTextView;
 
-        RepoViewHolder(View itemView) {
+        private Repo repo;
+
+        RepoViewHolder(View itemView, RepoSelectedListener repoSelectedListener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(v -> {
+                if (repo != null) {
+                    repoSelectedListener.onRepoSelected(repo);
+                }
+            });
         }
 
         void bind(Repo repo) {
+            this.repo = repo;
             repoNameTextView.setText(repo.name);
             repoDescriptionTextView.setText(repo.description);
             forksTextView.setText(String.valueOf(repo.forks));

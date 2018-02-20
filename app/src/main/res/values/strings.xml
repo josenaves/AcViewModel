@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">AC View Model</string>
     <string name="api_error_repos">Error loading repos</string>
+    <string name="forks">Forks</string>
+    <string name="stars">Stars</string>
+
 </resources>
