@@ -25,6 +25,8 @@ public class DetailsFragment extends Fragment {
 
     private Unbinder unbinder;
 
+    private SelectedRepoViewModel selectedRepoViewModel;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,12 +37,19 @@ public class DetailsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        selectedRepoViewModel = ViewModelProviders.of(getActivity())
+                .get(SelectedRepoViewModel.class);
+        selectedRepoViewModel.restoreFromBundle(savedInstanceState);
         displayRepo();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        selectedRepoViewModel.saveToBundle(outState);
+    }
+
     private void displayRepo() {
-        SelectedRepoViewModel selectedRepoViewModel = ViewModelProviders.of(getActivity())
-                .get(SelectedRepoViewModel.class);
         selectedRepoViewModel.getSelectedRepo().observe(this, repo -> {
             repoNameTextView.setText(repo.name);
             repoDescriptionTextView.setText(repo.description);
