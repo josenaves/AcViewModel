@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.josenaves.acviewmodel.model.Repo;
-import com.josenaves.acviewmodel.networking.RepoApi;
+import com.josenaves.acviewmodel.networking.RepoService;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,6 +27,13 @@ public class SelectedRepoViewModel extends ViewModel {
 
     public LiveData<Repo> getSelectedRepo() {
         return selectedRepo;
+    }
+
+    private final RepoService repoService;
+
+    @Inject
+    public SelectedRepoViewModel(RepoService repoService) {
+        this.repoService = repoService;
     }
 
     void setSelectedRepo(Repo repo) {
@@ -50,7 +59,7 @@ public class SelectedRepoViewModel extends ViewModel {
     }
 
     private void loadRepo(String[] repoDetails) {
-        repoCall = RepoApi.getInstance().getRepo(repoDetails[0], repoDetails[1]);
+        repoCall = repoService.getRepo(repoDetails[0], repoDetails[1]);
         repoCall.enqueue(new Callback<Repo>() {
             @Override
             public void onResponse(Call<Repo> call, Response<Repo> response) {

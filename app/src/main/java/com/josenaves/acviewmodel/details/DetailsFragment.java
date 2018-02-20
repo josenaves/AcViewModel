@@ -1,6 +1,7 @@
 package com.josenaves.acviewmodel.details;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,13 +11,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.josenaves.acviewmodel.R;
+import com.josenaves.acviewmodel.base.ACViewModelApplication;
 import com.josenaves.acviewmodel.home.SelectedRepoViewModel;
+import com.josenaves.acviewmodel.viewmodel.ViewModelFactory;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public class DetailsFragment extends Fragment {
+
+    @Inject ViewModelFactory viewModelFactory;
 
     @BindView(R.id.tv_repo_name) TextView repoNameTextView;
     @BindView(R.id.tv_repo_description) TextView repoDescriptionTextView;
@@ -26,6 +33,12 @@ public class DetailsFragment extends Fragment {
     private Unbinder unbinder;
 
     private SelectedRepoViewModel selectedRepoViewModel;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ACViewModelApplication.getApplicationComponent(context).inject(this);
+    }
 
     @Nullable
     @Override
@@ -37,7 +50,7 @@ public class DetailsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        selectedRepoViewModel = ViewModelProviders.of(getActivity())
+        selectedRepoViewModel = ViewModelProviders.of(getActivity(), viewModelFactory)
                 .get(SelectedRepoViewModel.class);
         selectedRepoViewModel.restoreFromBundle(savedInstanceState);
         displayRepo();

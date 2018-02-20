@@ -2,6 +2,7 @@ package com.josenaves.acviewmodel.home;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,10 +16,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.josenaves.acviewmodel.R;
+import com.josenaves.acviewmodel.base.ACViewModelApplication;
 import com.josenaves.acviewmodel.details.DetailsFragment;
 import com.josenaves.acviewmodel.model.Repo;
+import com.josenaves.acviewmodel.viewmodel.ViewModelFactory;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,12 +31,20 @@ import butterknife.Unbinder;
 
 public class ListFragment extends Fragment implements RepoSelectedListener {
 
+    @Inject ViewModelFactory viewModelFactory;
+
     @BindView(R.id.recycler_view) RecyclerView listView;
     @BindView(R.id.tv_error) TextView errorTextView;
     @BindView(R.id.loading_view) ProgressBar loadingView;
 
     private Unbinder unbinder;
     private ListViewModel viewModel;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ACViewModelApplication.getApplicationComponent(context).inject(this);
+    }
 
     @Nullable
     @Override
@@ -43,7 +56,7 @@ public class ListFragment extends Fragment implements RepoSelectedListener {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ListViewModel.class);
 
         listView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         listView.setAdapter(new RepoListAdapter(viewModel, this, this));
@@ -55,7 +68,8 @@ public class ListFragment extends Fragment implements RepoSelectedListener {
     @Override
     public void onRepoSelected(Repo repo) {
         SelectedRepoViewModel selectedRepoViewModel =
-                ViewModelProviders.of(getActivity()).get(SelectedRepoViewModel.class);
+                ViewModelProviders.of(getActivity(), viewModelFactory)
+                        .get(SelectedRepoViewModel.class);
         selectedRepoViewModel.setSelectedRepo(repo);
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.screen_container, new DetailsFragment())
