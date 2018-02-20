@@ -28,7 +28,6 @@ public class RepoApi {
                 .baseUrl(BASE_URL)
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build();
-
     }
 
     private RepoApi() {
