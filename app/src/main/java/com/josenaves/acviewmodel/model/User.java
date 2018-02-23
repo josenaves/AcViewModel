@@ -1,9 +1,15 @@
 package com.josenaves.acviewmodel.model;
 
-public class User {
-    public final String login;
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-    public User(String login) {
-        this.login = login;
+@AutoValue
+public abstract class User {
+
+    public abstract String login();
+
+    public static JsonAdapter<User> moshiAdapter(Moshi moshi) {
+        return new AutoValue_User.MoshiJsonAdapter(moshi);
     }
 }

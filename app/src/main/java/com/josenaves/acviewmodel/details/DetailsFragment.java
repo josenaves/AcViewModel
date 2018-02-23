@@ -64,10 +64,10 @@ public class DetailsFragment extends Fragment {
 
     private void displayRepo() {
         selectedRepoViewModel.getSelectedRepo().observe(this, repo -> {
-            repoNameTextView.setText(repo.name);
-            repoDescriptionTextView.setText(repo.description);
-            forksTextView.setText(String.valueOf(repo.forks));
-            starsTextView.setText(String.valueOf(repo.stars));
+            repoNameTextView.setText(repo.name());
+            repoDescriptionTextView.setText(repo.description());
+            forksTextView.setText(String.valueOf(repo.forks()));
+            starsTextView.setText(String.valueOf(repo.stars()));
         });
     }
 
